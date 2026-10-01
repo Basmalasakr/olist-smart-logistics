@@ -1,0 +1,30 @@
+{
+    "Correios_PAC": {
+        "name": "Correios PAC (Standard)",
+        "type": "Economy",
+        "speed_multiplier": 1.1,
+        "cost_multiplier": 0.8,
+        "late_prob_multiplier": 1.2
+    },
+    "Jadlog": {
+        "name": "Jadlog (Balanced)",
+        "type": "Standard",
+        "speed_multiplier": 0.9,
+        "cost_multiplier": 1.1,
+        "late_prob_multiplier": 0.9
+    },
+    "Azul_Cargo": {
+        "name": "Azul Cargo (Air)",
+        "type": "Express",
+        "speed_multiplier": 0.5,
+        "cost_multiplier": 1.8,
+        "late_prob_multiplier": 0.4
+    },
+    "Loggi": {
+        "name": "Loggi (Urban)",
+        "type": "Local",
+        "speed_multiplier": 0.7,
+        "cost_multiplier": 1.3,
+        "late_prob_multiplier": 0.6
+    }
+}
