@@ -30,7 +30,7 @@ models, BRL_PER_LATE, carriers = load_assets()
 
 st.title("🗺️ Olist Smart Logistics (Amazon SCOT Equivalent)")
 
-tab1, tab2 = st.tabs(["🚀 Smart Shipping Engine", "🏢 Network Optimization (Hubs)"])
+tab1, tab2 = st.tabs([" Smart Shipping Engine", " Network Optimization (Hubs)"])
 
 with tab1:
     col1, col2 = st.columns([1, 2])
@@ -42,12 +42,12 @@ with tab1:
         base_freight = st.number_input("Base Freight Cost (BRL)", 10.0, 200.0, 25.0)
         
         st.markdown("---")
-        st.subheader("⚠️ External Factors (Business Logic)")
+        st.subheader(" External Factors (Business Logic)")
         
         weather = st.selectbox("Route Weather Condition ⛈️", ["Clear ☀", "Heavy Rain 🌧️", "Severe Storms 🌪️"])
-        is_peak = st.checkbox("🔥 High Network Load (Peak Season)")
+        is_peak = st.checkbox(" High Network Load (Peak Season)")
         
-        run_engine = st.button("🚀 Run Smart Engine", use_container_width=True)
+        run_engine = st.button(" Run Smart Engine", use_container_width=True)
 
     with col2:
         st.subheader("📍 Multi-leg Routing Tracking")
@@ -119,7 +119,7 @@ with tab1:
             })
             
         st.markdown("---")
-        st.subheader("🏆 Final Recommendations (Weather & Capacity Applied)")
+        st.subheader(" Final Recommendations (Weather & Capacity Applied)")
         st.dataframe(pd.DataFrame(results).sort_values("Total Cost ⭐"), use_container_width=True, hide_index=True)
 
 
