@@ -140,7 +140,7 @@ with tab1:
 
 with tab2:
     st.subheader("📍 Customer Concentration & High Freight Cost Map")
-    st.markdown("The current Olist system ships most products from São Paulo (SP). Red hotspots represent customers paying exceptionally high shipping costs. **Opening a Cross-Docking Hub in these areas will save millions in freight costs.**")
+    st.markdown("The current Olist system ships most products from São Paulo (SP). Red hotspots represent customers paying exceptionally high shipping costs. **Opening a Cross Docking Hub in these areas will save millions in freight costs.**")
     
     m_heat = folium.Map(location=[-15.7801, -47.9292], zoom_start=4)
     
