@@ -3,7 +3,7 @@ import pandas as pd
 import joblib
 import json
 import folium
-from streamlit_folium import st_folium
+from streamlit_folium import st_folium, folium_static
 from folium.plugins import HeatMap
 import numpy as np
 
@@ -79,7 +79,8 @@ with tab1:
         folium.PolyLine(locations=[start_pos, hub_pos], color="gray", weight=3, dash_array="5, 5").add_to(m)
         folium.PolyLine(locations=[hub_pos, end_pos], color="blue", weight=3).add_to(m)
         
-        st_folium(m, width=700, height=350)
+        # التعديل الأول: إضافة key للخريطة الأولى
+        st_folium(m, width=700, height=350, key="routing_map")
 
     if run_engine:
         order_data = {
@@ -147,5 +148,6 @@ with tab2:
     heat_data += [[-3.7172 + (np.random.rand()-0.5)*2, -38.5431 + (np.random.rand()-0.5)*2] for _ in range(150)]
     heat_data += [[-22.9068 + (np.random.rand()-0.5)*1, -43.1729 + (np.random.rand()-0.5)*1] for _ in range(300)]
     
+    # التعديل التاني: إضافة أمر رسم الـ HeatMap وعرضها بـ folium_static
     HeatMap(heat_data, radius=15, blur=10, max_zoom=1).add_to(m_heat)
-    st_folium(m_heat, width=900, height=500)
+    folium_static(m_heat, width=900, height=500)
