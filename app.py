@@ -2,9 +2,6 @@ import streamlit as st
 import pandas as pd
 import joblib
 import json
-import folium
-from streamlit_folium import st_folium
-from folium.plugins import HeatMap
 import numpy as np
 
 st.set_page_config(page_title="Olist AI Logistics", page_icon="🗺️", layout="wide")
@@ -66,20 +63,16 @@ with tab1:
     with col2:
         st.subheader("📍 Multi-leg Routing Tracking")
         
-        m = folium.Map(location=[-15.7801, -47.9292], zoom_start=4)
-        start_pos = COORDS[seller_state]
-        end_pos = COORDS[customer_state]
+        # استخدام خريطة ستريمليت الأصلية الثابتة والصاروخية
+        start_lat, start_lon = COORDS[seller_state]
+        end_lat, end_lon = COORDS[customer_state]
         
-        hub_pos = [(start_pos[0] + end_pos[0]) / 2, (start_pos[1] + end_pos[1]) / 2]
-        
-        folium.Marker(start_pos, popup="Seller Warehouse", icon=folium.Icon(color="green", icon="box")).add_to(m)
-        folium.Marker(hub_pos, popup="Distribution Center (Hub)", icon=folium.Icon(color="orange", icon="exchange")).add_to(m)
-        folium.Marker(end_pos, popup="Customer (Last Mile)", icon=folium.Icon(color="red", icon="home")).add_to(m)
-        
-        folium.PolyLine(locations=[start_pos, hub_pos], color="gray", weight=3, dash_array="5, 5").add_to(m)
-        folium.PolyLine(locations=[hub_pos, end_pos], color="blue", weight=3).add_to(m)
-        
-        st_folium(m, width=700, height=350, key="route_map")
+        map_df = pd.DataFrame({
+            'lat': [start_lat, end_lat],
+            'lon': [start_lon, end_lon],
+            'color': ['#00FF00', '#FF0000']
+        })
+        st.map(map_df, latitude='lat', longitude='lon', size=50, color='color')
 
     if run_engine:
         order_data = {
@@ -141,10 +134,9 @@ with tab2:
     st.subheader("📍 Customer Concentration & High Freight Cost Map")
     st.markdown("The current Olist system ships most products from São Paulo (SP). Red hotspots represent customers paying exceptionally high shipping costs. **Opening a Cross-Docking Hub in these areas will save millions in freight costs.**")
     
-    m_heat = folium.Map(location=[-15.7801, -47.9292], zoom_start=4)
-    
-    heat_data = [[-12.9714 + (np.random.rand()-0.5)*2, -38.5014 + (np.random.rand()-0.5)*2] for _ in range(200)]
-    heat_data += [[-3.7172 + (np.random.rand()-0.5)*2, -38.5431 + (np.random.rand()-0.5)*2] for _ in range(150)]
-    
-    HeatMap(heat_data, radius=15, blur=10, max_zoom=1).add_to(m_heat)
-    st_folium(m_heat, width=900, height=500, key="heatmap")
+    # خريطة نقاط انتشار العملاء الثابتة والاحترافية
+    hub_df = pd.DataFrame({
+        'lat': [-12.9714, -3.7172, -22.9068, -23.5505, -19.9167],
+        'lon': [-38.5014, -38.5431, -43.1729, -46.6333, -43.9345]
+    })
+    st.map(hub_df, latitude='lat', longitude='lon', size=100)
