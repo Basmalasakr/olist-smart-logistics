@@ -18,7 +18,6 @@ COORDS = {
 
 @st.cache_resource
 def load_assets():
-    # قراءة الملفات من الجذر (Root) مباشرة بدون فولدر models
     models = joblib.load("shipping_models_advanced.joblib")
     with open("penalty.json", "r") as f: 
         penalty = json.load(f)
@@ -38,7 +37,7 @@ with tab1:
         st.subheader("📦 Live Shipment Data")
         seller_state = st.selectbox("Seller State", ["SP", "RJ", "MG", "RS", "PR"])
         customer_state = st.selectbox("Customer State", ["RJ", "SP", "MG", "BA", "CE"])
-        category = st.selectbox("Product Category", ["beleza_saude", "cama_mesa_banho", "informatica_acessorios"])
+        category = st.selectbox("Product Category", ["beleza saude", "cama mesa banho", "informatica acessorios"])
         base_freight = st.number_input("Base Freight Cost (BRL)", 10.0, 200.0, 25.0)
         
         st.markdown("---")
