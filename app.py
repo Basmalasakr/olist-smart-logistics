@@ -18,15 +18,15 @@ COORDS = {
 
 @st.cache_resource
 def load_assets():
-    models = joblib.load("models/shipping_models_advanced.joblib")
-    with open("models/penalty.json", "r") as f: 
+    # قراءة الملفات من الجذر (Root) مباشرة بدون فولدر models
+    models = joblib.load("shipping_models_advanced.joblib")
+    with open("penalty.json", "r") as f: 
         penalty = json.load(f)
-    with open("models/carriers.json", "r") as f: 
+    with open("carriers.json", "r") as f: 
         carriers = json.load(f)
-    df = pd.read_csv("data/processed/orders_clean.csv")
-    return models, penalty["penalty_cost_brl"], carriers, df
+    return models, penalty["penalty_cost_brl"], carriers
 
-models, BRL_PER_LATE, carriers, df_history = load_assets()
+models, BRL_PER_LATE, carriers = load_assets()
 
 st.title("🗺️ Olist Smart Logistics (Amazon SCOT Equivalent)")
 
@@ -42,9 +42,9 @@ with tab1:
         base_freight = st.number_input("Base Freight Cost (BRL)", 10.0, 200.0, 25.0)
         
         st.markdown("---")
-        st.subheader(" External Factors (Business Logic)")
+        st.subheader("⚠️ External Factors (Business Logic)")
         
-        weather = st.selectbox("Route Weather Condition ⛈️", ["Clear ☀️️", "Heavy Rain 🌧️", "Severe Storms 🌪️"])
+        weather = st.selectbox("Route Weather Condition ⛈️", ["Clear ☀", "Heavy Rain 🌧️", "Severe Storms 🌪️"])
         is_peak = st.checkbox("🔥 High Network Load (Peak Season)")
         
         run_engine = st.button("🚀 Run Smart Engine", use_container_width=True)
