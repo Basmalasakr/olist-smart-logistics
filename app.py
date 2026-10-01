@@ -27,9 +27,9 @@ def load_assets():
 
 models, BRL_PER_LATE, carriers = load_assets()
 
-st.title("🗺️ Olist Smart Logistics (Amazon SCOT Equivalent)")
+st.title("🗺️ Olist Smart Logistics")
 
-tab1, tab2 = st.tabs([" Smart Shipping Engine", " Network Optimization (Hubs)"])
+tab1, tab2 = st.tabs(["Smart Shipping Engine", "Network Optimization (Hubs)"])
 
 with tab1:
     col1, col2 = st.columns([1, 2])
@@ -37,16 +37,31 @@ with tab1:
         st.subheader("📦 Live Shipment Data")
         seller_state = st.selectbox("Seller State", ["SP", "RJ", "MG", "RS", "PR"])
         customer_state = st.selectbox("Customer State", ["RJ", "SP", "MG", "BA", "CE"])
-        category = st.selectbox("Product Category", ["beleza saude", "cama mesa banho", "informatica acessorios"])
+        
+        display_category = st.selectbox("Product Category", [
+            "Electronics & Tech Accessories", 
+            "Home & Living", 
+            "Beauty & Personal Care", 
+            "Sports & Leisure"
+        ])
+        
+        category_mapping = {
+            "Electronics & Tech Accessories": "informatica_acessorios",
+            "Home & Living": "cama_mesa_banho",
+            "Beauty & Personal Care": "beleza_saude",
+            "Sports & Leisure": "esporte_lazer"
+        }
+        category = category_mapping[display_category]
+        
         base_freight = st.number_input("Base Freight Cost (BRL)", 10.0, 200.0, 25.0)
         
         st.markdown("---")
-        st.subheader(" External Factors (Business Logic)")
+        st.subheader("External Factors (Business Logic)")
         
         weather = st.selectbox("Route Weather Condition ⛈️", ["Clear ☀", "Heavy Rain 🌧️", "Severe Storms 🌪️"])
-        is_peak = st.checkbox(" High Network Load (Peak Season)")
+        is_peak = st.checkbox("High Network Load (Peak Season)")
         
-        run_engine = st.button(" Run Smart Engine", use_container_width=True)
+        run_engine = st.button("Run Smart Engine", use_container_width=True)
 
     with col2:
         st.subheader("📍 Multi-leg Routing Tracking")
@@ -64,7 +79,7 @@ with tab1:
         folium.PolyLine(locations=[start_pos, hub_pos], color="gray", weight=3, dash_array="5, 5").add_to(m)
         folium.PolyLine(locations=[hub_pos, end_pos], color="blue", weight=3).add_to(m)
         
-        st_folium(m, width=700, height=350)
+        st_folium(m, width=700, height=350, key="route_map")
 
     if run_engine:
         order_data = {
@@ -118,7 +133,7 @@ with tab1:
             })
             
         st.markdown("---")
-        st.subheader(" Final Recommendations (Weather & Capacity Applied)")
+        st.subheader("Final Recommendations (Weather & Capacity Applied)")
         st.dataframe(pd.DataFrame(results).sort_values("Total Cost ⭐"), use_container_width=True, hide_index=True)
 
 
@@ -132,4 +147,4 @@ with tab2:
     heat_data += [[-3.7172 + (np.random.rand()-0.5)*2, -38.5431 + (np.random.rand()-0.5)*2] for _ in range(150)]
     
     HeatMap(heat_data, radius=15, blur=10, max_zoom=1).add_to(m_heat)
-    st_folium(m_heat, width=900, height=500)
+    st_folium(m_heat, width=900, height=500, key="heatmap")
