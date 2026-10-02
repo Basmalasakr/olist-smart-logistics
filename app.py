@@ -21,6 +21,7 @@ COORDS = {
 
 @st.cache_data
 def get_real_route(start, end):
+    """Fetch real street route using OSRM API"""
     try:
         url = f"http://router.project-osrm.org/route/v1/driving/{start[1]},{start[0]};{end[1]},{end[0]}?overview=full&geometries=geojson"
         r = requests.get(url, timeout=5).json()
@@ -44,7 +45,7 @@ models, BRL_PER_LATE, carriers = load_assets()
 
 st.title("🗺️ Olist Smart Logistics Engine")
 
-tab1, tab2 = st.tabs(["Smart Shipping Engine", " Network Optimization (Hubs)"])
+tab1, tab2 = st.tabs([" Smart Shipping Engine", "Network Optimization (Hubs)"])
 
 with tab1:
     col1, col2 = st.columns([1, 2.2])
@@ -69,7 +70,6 @@ with tab1:
         
         base_freight = st.number_input("Base Freight Cost (BRL)", 10.0, 500.0, 25.0)
         
-        # إضافة الوزن والحجم
         col_w, col_v = st.columns(2)
         weight_g = col_w.number_input("Weight (g)", 100, 50000, 1200)
         volume_cm3 = col_v.number_input("Volume (cm³)", 100, 200000, 8000)
@@ -80,10 +80,7 @@ with tab1:
         weather = st.selectbox("Weather Condition ⛈️", ["Clear ☀", "Heavy Rain 🌧️", "Severe Storms 🌪️"])
         is_peak = st.checkbox(" Peak Season (Black Friday)")
         
-        # إضافة محاكاة تأخير البائع
-        seller_delayed = st.checkbox("⏳ Seller Handover Delayed", help="If the seller is late, the AI will prioritize Express shipping to save the SLA.")
-        
-        run_engine = st.button("🚀 Optimize Routing", use_container_width=True)
+        run_engine = st.button(" Optimize Routing", use_container_width=True)
 
     with col2:
         st.subheader("📍 Live Intelligent Routing")
@@ -138,15 +135,7 @@ with tab1:
                 if profile["type"] != "Express": carrier_days *= 1.8  
                 penalty_multiplier *= 1.5
                 
-            if seller_delayed:
-                if profile["type"] != "Express":
-                    carrier_late_prob = 1.0 
-                    penalty_multiplier *= 2.5 
-                else:
-                    carrier_late_prob = min(base_late_prob * profile["late_prob_multiplier"], 1.0)
-            else:
-                carrier_late_prob = min(base_late_prob * profile["late_prob_multiplier"] * penalty_multiplier, 1.0)
-                
+            carrier_late_prob = min(base_late_prob * profile["late_prob_multiplier"] * penalty_multiplier, 1.0)
             expected_penalty = carrier_late_prob * BRL_PER_LATE
             
             if weight_g > 15000:
@@ -155,18 +144,18 @@ with tab1:
             results.append({
                 "Carrier": profile["name"], 
                 "Type": profile["type"],
-                "Est. Days ⏱️": round(carrier_days, 1),
-                "Cost (BRL) 💰": round(carrier_cost, 2), 
-                "Late Risk ⚠️": f"{round(carrier_late_prob * 100, 1)}%",
-                "Penalty Risk 💸": round(expected_penalty, 2),
-                "Total Cost ⭐": round(carrier_cost + expected_penalty, 2)
+                "Est. Days": round(carrier_days, 1),
+                "Cost (BRL)": round(carrier_cost, 2), 
+                "Late Risk": f"{round(carrier_late_prob * 100, 1)}%",
+                "Penalty Risk": round(expected_penalty, 2),
+                "Total Cost": round(carrier_cost + expected_penalty, 2)
             })
             
-        df_results = pd.DataFrame(results).sort_values("Total Cost ")
+        df_results = pd.DataFrame(results).sort_values("Total Cost")
         best_carrier = df_results.iloc[0]
         
         st.markdown("---")
-        st.success(f"** AI Decision:** **{best_carrier['Carrier']}** selected as the optimal choice considering weather, package size, and delay risks.")
+        st.success(f"**🤖 AI Decision:** **{best_carrier['Carrier']}** selected as the optimal choice considering weather, package size, and delay risks.")
         st.dataframe(df_results, use_container_width=True, hide_index=True)
 
 
@@ -176,10 +165,10 @@ with tab2:
     
     m_heat = folium.Map(location=[-12.7801, -43.9292], zoom_start=4.5)
     
-    heat_data = [[-12.97 + (np.random.rand()-0.5)*2, -38.50 + (np.random.rand()-0.5)*2] for _ in range(250)] # Bahia
-    heat_data += [[-8.04 + (np.random.rand()-0.5)*1.5, -34.87 + (np.random.rand()-0.5)*1.5] for _ in range(200)] # Pernambuco
-    heat_data += [[-3.71 + (np.random.rand()-0.5)*1.5, -38.54 + (np.random.rand()-0.5)*1.5] for _ in range(200)] # Ceara
-    heat_data += [[-22.90 + (np.random.rand()-0.5)*1, -43.17 + (np.random.rand()-0.5)*1] for _ in range(400)] # Rio de Janeiro
+    heat_data = [[-12.97 + (np.random.rand()-0.5)*2, -38.50 + (np.random.rand()-0.5)*2] for _ in range(250)]
+    heat_data += [[-8.04 + (np.random.rand()-0.5)*1.5, -34.87 + (np.random.rand()-0.5)*1.5] for _ in range(200)]
+    heat_data += [[-3.71 + (np.random.rand()-0.5)*1.5, -38.54 + (np.random.rand()-0.5)*1.5] for _ in range(200)]
+    heat_data += [[-22.90 + (np.random.rand()-0.5)*1, -43.17 + (np.random.rand()-0.5)*1] for _ in range(400)]
     
     HeatMap(heat_data, name="Delay Hotspots", radius=15, blur=10, max_zoom=1).add_to(m_heat)
     
