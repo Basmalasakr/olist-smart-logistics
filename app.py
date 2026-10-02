@@ -10,7 +10,6 @@ import numpy as np
 
 st.set_page_config(page_title="Olist AI Logistics", page_icon="🗺️", layout="wide")
 
-# إحداثيات ولايات البرازيل
 COORDS = {
     "SP": [-23.5505, -46.6333], "RJ": [-22.9068, -43.1729],
     "MG": [-19.9167, -43.9345], "RS": [-30.0346, -51.2177],
@@ -22,7 +21,6 @@ COORDS = {
 
 @st.cache_data
 def get_real_route(start, end):
-    """جلب مسار الشوارع الحقيقي مجاناً عبر OSRM API"""
     try:
         url = f"http://router.project-osrm.org/route/v1/driving/{start[1]},{start[0]};{end[1]},{end[0]}?overview=full&geometries=geojson"
         r = requests.get(url, timeout=5).json()
@@ -46,7 +44,7 @@ models, BRL_PER_LATE, carriers = load_assets()
 
 st.title("🗺️ Olist Smart Logistics Engine")
 
-tab1, tab2 = st.tabs(["🚀 Smart Shipping Engine", "🏢 Network Optimization (Hubs)"])
+tab1, tab2 = st.tabs(["Smart Shipping Engine", " Network Optimization (Hubs)"])
 
 with tab1:
     col1, col2 = st.columns([1, 2.2])
@@ -77,10 +75,10 @@ with tab1:
         volume_cm3 = col_v.number_input("Volume (cm³)", 100, 200000, 8000)
         
         st.markdown("---")
-        st.subheader("⚠️ Business Constraints")
+        st.subheader(" Business Constraints")
         
         weather = st.selectbox("Weather Condition ⛈️", ["Clear ☀", "Heavy Rain 🌧️", "Severe Storms 🌪️"])
-        is_peak = st.checkbox("🔥 Peak Season (Black Friday)")
+        is_peak = st.checkbox(" Peak Season (Black Friday)")
         
         # إضافة محاكاة تأخير البائع
         seller_delayed = st.checkbox("⏳ Seller Handover Delayed", help="If the seller is late, the AI will prioritize Express shipping to save the SLA.")
@@ -132,7 +130,6 @@ with tab1:
             carrier_cost = base_freight * profile["cost_multiplier"]
             penalty_multiplier = 1.0
             
-            # تأثير المواسم والطقس
             if is_peak and profile["type"] == "Local": penalty_multiplier *= 1.5
             if weather == "Heavy Rain 🌧️":
                 if profile["type"] != "Express": carrier_days *= 1.3  
@@ -141,11 +138,10 @@ with tab1:
                 if profile["type"] != "Express": carrier_days *= 1.8  
                 penalty_multiplier *= 1.5
                 
-            # تأثير تأخير البائع (لو البائع متأخر، الشركات العادية هتتدمر غرامات)
             if seller_delayed:
                 if profile["type"] != "Express":
-                    carrier_late_prob = 1.0 # تأكيد التأخير
-                    penalty_multiplier *= 2.5 # مضاعفة الغرامة
+                    carrier_late_prob = 1.0 
+                    penalty_multiplier *= 2.5 
                 else:
                     carrier_late_prob = min(base_late_prob * profile["late_prob_multiplier"], 1.0)
             else:
@@ -153,7 +149,6 @@ with tab1:
                 
             expected_penalty = carrier_late_prob * BRL_PER_LATE
             
-            # تأثير الوزن الثقيل على التكلفة (لو وزن كبير، الشركات العادية والسريعة بتغلى)
             if weight_g > 15000:
                 carrier_cost *= 1.5
                 
@@ -167,11 +162,11 @@ with tab1:
                 "Total Cost ⭐": round(carrier_cost + expected_penalty, 2)
             })
             
-        df_results = pd.DataFrame(results).sort_values("Total Cost ⭐")
+        df_results = pd.DataFrame(results).sort_values("Total Cost ")
         best_carrier = df_results.iloc[0]
         
         st.markdown("---")
-        st.success(f"**🤖 AI Decision:** **{best_carrier['Carrier']}** selected as the optimal choice considering weather, package size, and delay risks.")
+        st.success(f"** AI Decision:** **{best_carrier['Carrier']}** selected as the optimal choice considering weather, package size, and delay risks.")
         st.dataframe(df_results, use_container_width=True, hide_index=True)
 
 
@@ -181,19 +176,15 @@ with tab2:
     
     m_heat = folium.Map(location=[-12.7801, -43.9292], zoom_start=4.5)
     
-    # محاكاة واقعية لبؤر التأخير في البرازيل
     heat_data = [[-12.97 + (np.random.rand()-0.5)*2, -38.50 + (np.random.rand()-0.5)*2] for _ in range(250)] # Bahia
     heat_data += [[-8.04 + (np.random.rand()-0.5)*1.5, -34.87 + (np.random.rand()-0.5)*1.5] for _ in range(200)] # Pernambuco
     heat_data += [[-3.71 + (np.random.rand()-0.5)*1.5, -38.54 + (np.random.rand()-0.5)*1.5] for _ in range(200)] # Ceara
     heat_data += [[-22.90 + (np.random.rand()-0.5)*1, -43.17 + (np.random.rand()-0.5)*1] for _ in range(400)] # Rio de Janeiro
     
-    # إضافة طبقة الخريطة الحرارية
     HeatMap(heat_data, name="Delay Hotspots", radius=15, blur=10, max_zoom=1).add_to(m_heat)
     
-    # إضافة الفروع المقترحة لحل المشكلة (نجوم زرقاء)
     folium.Marker([-12.9714, -38.5014], popup="Proposed Hub: Northeast (Salvador)", icon=folium.Icon(color="blue", icon="star")).add_to(m_heat)
     folium.Marker([-22.9068, -43.1729], popup="Proposed Hub: Southeast (Rio)", icon=folium.Icon(color="blue", icon="star")).add_to(m_heat)
     
-    # إضافة زر التبديل بين الطبقات
     folium.LayerControl().add_to(m_heat)
     folium_static(m_heat, width=900, height=500)
