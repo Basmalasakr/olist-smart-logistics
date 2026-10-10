@@ -50,7 +50,7 @@ tab1, tab2 = st.tabs([" Smart Shipping Engine", "Network Optimization (Hubs)"])
 with tab1:
     col1, col2 = st.columns([1, 2.2])
     with col1:
-        st.subheader("📦 Shipment Details")
+        st.subheader(" Shipment Details")
         states_list = list(COORDS.keys())
         seller_state = st.selectbox("Seller State", states_list, index=0)
         customer_state = st.selectbox("Customer State", states_list, index=1)
@@ -77,13 +77,13 @@ with tab1:
         st.markdown("---")
         st.subheader(" Business Constraints")
         
-        weather = st.selectbox("Weather Condition ⛈️", ["Clear ☀", "Heavy Rain 🌧️", "Severe Storms 🌪️"])
+        weather = st.selectbox("Weather Condition ⛈️", ["Clear ", "Heavy Rain ", "Severe Storms "])
         is_peak = st.checkbox(" Peak Season (Black Friday)")
         
         run_engine = st.button(" Optimize Routing", use_container_width=True)
 
     with col2:
-        st.subheader("📍 Live Intelligent Routing")
+        st.subheader(" Live Intelligent Routing")
         
         m = folium.Map(location=[-15.7801, -47.9292], zoom_start=4)
         start_pos = COORDS[seller_state]
@@ -128,10 +128,10 @@ with tab1:
             penalty_multiplier = 1.0
             
             if is_peak and profile["type"] == "Local": penalty_multiplier *= 1.5
-            if weather == "Heavy Rain 🌧️":
+            if weather == "Heavy Rain ":
                 if profile["type"] != "Express": carrier_days *= 1.3  
                 penalty_multiplier *= 1.2
-            elif weather == "Severe Storms 🌪️":
+            elif weather == "Severe Storms ":
                 if profile["type"] != "Express": carrier_days *= 1.8  
                 penalty_multiplier *= 1.5
                 
@@ -155,12 +155,12 @@ with tab1:
         best_carrier = df_results.iloc[0]
         
         st.markdown("---")
-        st.success(f"**🤖 AI Decision:** **{best_carrier['Carrier']}** selected as the optimal choice considering weather, package size, and delay risks.")
+        st.success(f"** AI Decision:** **{best_carrier['Carrier']}** selected as the optimal choice considering weather, package size, and delay risks.")
         st.dataframe(df_results, use_container_width=True, hide_index=True)
 
 
 with tab2:
-    st.subheader("📍 Strategic Network Optimization (Heatmap & Proposed Hubs)")
+    st.subheader(" Strategic Network Optimization (Heatmap & Proposed Hubs)")
     st.markdown("The heatmap highlights historical **Delay & High Freight Cost Hotspots** (Northeast & Rio). The **Blue Stars** indicate proposed Olist Cross-Docking Hubs to intercept packages early and slash last-mile costs.")
     
     m_heat = folium.Map(location=[-12.7801, -43.9292], zoom_start=4.5)
