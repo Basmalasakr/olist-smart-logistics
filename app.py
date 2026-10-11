@@ -77,7 +77,7 @@ with tab1:
         st.markdown("---")
         st.subheader(" Business Constraints")
         
-        weather = st.selectbox("Weather Condition ⛈️", ["Clear ", "Heavy Rain ", "Severe Storms "])
+        weather = st.selectbox("Weather Condition ", ["Clear ", "Heavy Rain ", "Severe Storms "])
         is_peak = st.checkbox(" Peak Season (Black Friday)")
         
         run_engine = st.button(" Optimize Routing", use_container_width=True)
