@@ -155,7 +155,7 @@ with tab1:
         best_carrier = df_results.iloc[0]
         
         st.markdown("---")
-        st.success(f"** AI Decision:** **{best_carrier['Carrier']}** selected as the optimal choice considering weather, package size, and delay risks.")
+        st.success(f" AI Decision:{best_carrier['Carrier']} selected as the optimal choice considering weather, package size, and delay risks.")
         st.dataframe(df_results, use_container_width=True, hide_index=True)
 
 
